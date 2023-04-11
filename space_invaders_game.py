@@ -216,13 +216,10 @@ class Game:
             action[0] = True
         if keys[pygame.K_SPACE]:
             action[1] = True
-        if keys[pygame.K_q]:
-            pass
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                self.game_over = True
 
         return action
 
@@ -276,7 +273,7 @@ class Game:
             bomb = Projectile(self.imgs.BOMB_IMG, x, alien.y + SPRITE_HEIGHT, Direction.DOWN)
             self.projectiles.append(bomb)
 
-    def game_loop(self):
+    def game_step(self):
         action = self.get_action()
         if action[1]:
             self.fire_laser()
@@ -289,8 +286,13 @@ class Game:
         self.frame_number += 1
         self.redraw()
 
+    def game_loop(self):
+        while not self.game_over:
+            self.game_step()
+        pygame.quit()
+        quit()
+
 
 if __name__ == '__main__':
     space_invaders_game = Game()
-    while not space_invaders_game.game_over:
-        space_invaders_game.game_loop()
+    space_invaders_game.game_loop()
