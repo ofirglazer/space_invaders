@@ -21,6 +21,7 @@ class Direction(Enum):
 
 
 pygame.init()
+SCORE_FONT = pygame.font.SysFont("comicsans", 50)
 
 
 class Images:
@@ -95,10 +96,13 @@ class Alien:
 
         if alien_type == 0:
             self.width = ALIEN0_WIDTH
+            self.score = 10
         elif alien_type == 1:
             self.width = ALIEN1_WIDTH
+            self.score = 20
         else:
             self.width = ALIEN2_WIDTH
+            self.score = 30
 
 
 class Swarm:
@@ -189,6 +193,7 @@ class Game:
         self.projectiles = list()
         self.frame_number = 0
         self.game_over = False
+        self.score = 0
 
     def redraw(self):
         self.canvas.fill([0, 0, 0])
@@ -205,6 +210,8 @@ class Game:
         # transform from screen to display
         self.display.blit(pygame.transform.scale(self.canvas,
                                                  self.display.get_rect().size), (0, 0))
+        text = SCORE_FONT.render("Score: " + str(self.score), True, (60, 100, 255), )
+        self.display.blit(text, (10, 10))
         pygame.display.flip()
 
     def get_action(self):
@@ -214,7 +221,7 @@ class Game:
             action[2] = True
         elif keys[pygame.K_LEFT]:
             action[0] = True
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_z]:
             action[1] = True
 
         for event in pygame.event.get():
@@ -228,6 +235,7 @@ class Game:
             for alien in alien_row[:]:
                 if laser.x in range(alien.x, alien.x + alien.width) and\
                         laser.y in range(alien.y, alien.y + SPRITE_HEIGHT):
+                    self.score += alien.score
                     alien_row.remove(alien)
                     laser.valid = False
 
